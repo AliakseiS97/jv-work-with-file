@@ -8,33 +8,20 @@ import java.io.IOException;
 
 public class WorkWithFile {
 
-    private int supply = 0;
-    private int buy = 0;
-
-    public int getSupply() {
-        return supply;
-    }
-
-    public void setSupply(int supply) {
-        this.supply = supply;
-    }
-
-    public int getBuy() {
-        return buy;
-    }
-
-    public void setBuy(int buy) {
-        this.buy = buy;
-    }
+    private static final String SUPPLY = "supply";
+    private static final String BUY = "buy";
+    private static final String RESULT = "result";
+    private static final String DELIMITER = ",";
 
     public void getStatistic(String fromFileName, String toFileName) {
-        this.supply = 0;
-        this.buy = 0;
-        readFile(fromFileName);
-        writeFile(toFileName);
+        int[] totals = readFile(fromFileName);
+        writeFile(toFileName, totals[0], totals[1]);
     }
 
-    public void readFile(String fromFileName) {
+    private int[] readFile(String fromFileName) {
+        int supply = 0;
+        int buy = 0;
+
         File file = new File(fromFileName);
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
@@ -49,17 +36,14 @@ public class WorkWithFile {
         } catch (IOException e) {
             throw new RuntimeException("Can't read from file", e);
         }
+        return new int[]{supply, buy};
     }
 
-    private int getResult() {
-        return supply - buy;
-    }
-
-    private void writeFile(String toFileName) {
+    private void writeFile(String toFileName, int supply, int buy) {
         try (FileWriter writer = new FileWriter(toFileName)) {
-            writer.write("supply," + supply + System.lineSeparator());
-            writer.write("buy," + buy + System.lineSeparator());
-            writer.write("result," + getResult() + System.lineSeparator());
+            writer.write(SUPPLY + DELIMITER + supply + System.lineSeparator());
+            writer.write(BUY + DELIMITER + buy + System.lineSeparator());
+            writer.write(RESULT + DELIMITER + (supply - buy) + System.lineSeparator());
         } catch (IOException e) {
             throw new RuntimeException("Can't write to file", e);
         }
